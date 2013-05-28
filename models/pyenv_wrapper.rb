@@ -51,13 +51,19 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
       @version = local_version unless local_version.empty?
     end
 
-    versions = capture("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} versions --bare").strip.split
-    unless versions.include?(@version)
-      # To update definitions, update pyenv before installing python
-      listener << "Update pyenv\n"
-      run(scm_sync(pyenv_repository, pyenv_revision, pyenv_root), {out: listener})
-      listener << "Install #{@version}\n"
-      run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} install #{@version.shellescape}", {out: listener})
+    begin
+      # To avoid starting multiple build jobs, acquire lock during installation
+      lock_acquire("#{pyenv_root}.lock")
+      versions = capture("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} versions --bare").strip.split
+      unless versions.include?(@version)
+        # To update definitions, update pyenv before installing python
+        listener << "Update pyenv\n"
+        run(scm_sync(pyenv_repository, pyenv_revision, pyenv_root), {out: listener})
+        listener << "Install #{@version}\n"
+        run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} install #{@version.shellescape}", {out: listener})
+      end
+    ensure
+      lock_release("#{pyenv_root}.lock")
     end
 
     pip_bin = "#{pyenv_root}/shims/pip"
@@ -131,5 +137,23 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
   def attribute(value, default_value=nil)
     str = value.to_s
     not(str.empty?) ? str : default_value
+  end
+
+  # pseudo semaphore
+  def lock_acquire(dir)
+    begin
+      run("mkdir -p #{dir.shellescape}")
+    rescue RuntimeError
+      sleep(8) # FIXME: should be configurable
+      retry
+    end
+  end
+
+  def lock_release(dir)
+    begin
+      run("rmdir #{dir.shellescape}")
+    rescue RuntimeError
+      run("rmdir #{dir.shellescape}")
+    end
   end
 end

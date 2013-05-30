@@ -146,7 +146,7 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
   # pseudo semaphore
   def lock_acquire(dir)
     begin
-      run("mkdir -p #{dir.shellescape}")
+      run("mkdir #{dir.shellescape}")
     rescue RuntimeError
       sleep(8) # FIXME: should be configurable
       retry

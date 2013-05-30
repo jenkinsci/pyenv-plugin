@@ -1,3 +1,5 @@
+*.swo
+*.swp
 /.rbenv-version
 /.ruby-version
 /Gemfile.lock

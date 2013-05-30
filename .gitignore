@@ -1,3 +1,5 @@
-work
-pkg
-Gemfile.lock
+/.rbenv-version
+/.ruby-version
+/Gemfile.lock
+/pkg
+/work

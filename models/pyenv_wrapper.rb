@@ -66,6 +66,9 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
       lock_release("#{pyenv_root}.lock")
     end
 
+    # Run rehash everytime before invoking pip
+    run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} rehash", {out: listener})
+
     pip_bin = "#{pyenv_root}/shims/pip"
     list = capture("PYENV_ROOT=#{pyenv_root.shellescape} PYENV_VERSION=#{@version.shellescape} #{pip_bin.shellescape} list").strip.split
     (@pip_list || 'tox').split(',').each do |pip|
@@ -75,14 +78,15 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
       end
     end
 
-    # Run rehash everytime to update binstubs
+    # Run rehash everytime after invoking pip
     run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} rehash", {out: listener})
 
     build.env["PYENV_ROOT"] = pyenv_root
     build.env['PYENV_VERSION'] = @version
-
     # Set ${PYENV_ROOT}/bin in $PATH to allow invoke pyenv from shell
-    build.env['PATH+PYENV'] = ["#{pyenv_root}/bin".shellescape, "#{pyenv_root}/shims".shellescape].join(":")
+    build.env["PATH+PYENV_BIN"] = "#{pyenv_root}/bin"
+    # Set ${PYENV_ROOT}/bin in $PATH to allow invoke binstubs from shell
+    build.env["PATH+PYENV_SHIMS"] = "#{pyenv_root}/shims"
   end
 
   private

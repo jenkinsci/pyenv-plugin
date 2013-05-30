@@ -52,9 +52,8 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
       @version = local_version unless local_version.empty?
     end
 
-    begin
-      # To avoid starting multiple build jobs, acquire lock during installation
-      lock_acquire("#{pyenv_root}.lock")
+    # To avoid starting multiple build jobs, acquire lock during installation
+    synchronize("#{pyenv_root}.lock") do
       versions = capture("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} versions --bare").strip.split
       unless versions.include?(@version)
         # To update definitions, update pyenv before installing python
@@ -63,24 +62,22 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
         listener << "Install #{@version}\n"
         run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} install #{@version.shellescape}", {out: listener})
       end
-    ensure
-      lock_release("#{pyenv_root}.lock")
-    end
 
-    # Run rehash everytime before invoking pip
-    run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} rehash", {out: listener})
+      # Run rehash everytime before invoking pip
+      run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} rehash", {out: listener})
 
-    pip_bin = "#{pyenv_root}/shims/pip"
-    list = capture("PYENV_ROOT=#{pyenv_root.shellescape} PYENV_VERSION=#{@version.shellescape} #{pip_bin.shellescape} list").strip.split
-    (@pip_list || 'tox').split(',').each do |pip|
-      unless list.include? pip
-        listener << "Install #{pip}\n"
-        run("PYENV_ROOT=#{pyenv_root.shellescape} PYENV_VERSION=#{@version.shellescape} #{pip_bin.shellescape} install #{pip.shellescape}", {out: listener})
+      pip_bin = "#{pyenv_root}/shims/pip"
+      list = capture("PYENV_ROOT=#{pyenv_root.shellescape} PYENV_VERSION=#{@version.shellescape} #{pip_bin.shellescape} list").strip.split
+      (@pip_list || 'tox').split(',').each do |pip|
+        unless list.include? pip
+          listener << "Install #{pip}\n"
+          run("PYENV_ROOT=#{pyenv_root.shellescape} PYENV_VERSION=#{@version.shellescape} #{pip_bin.shellescape} install #{pip.shellescape}", {out: listener})
+        end
       end
-    end
 
-    # Run rehash everytime after invoking pip
-    run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} rehash", {out: listener})
+      # Run rehash everytime after invoking pip
+      run("PYENV_ROOT=#{pyenv_root.shellescape} #{pyenv_bin.shellescape} rehash", {out: listener})
+    end
 
     build.env["PYENV_ROOT"] = pyenv_root
     build.env['PYENV_VERSION'] = @version
@@ -145,6 +142,15 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
   end
 
   # pseudo semaphore
+  def synchronize(dir)
+    begin
+      lock_acquire(dir)
+      yield
+    ensure
+      lock_release(dir)
+    end
+  end
+
   def lock_acquire(dir)
     begin
       run("mkdir #{dir.shellescape}")

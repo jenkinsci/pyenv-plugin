@@ -6,8 +6,9 @@ require "stringio"
 module Pyenv
   module InvokeCommand
     def capture(command, options={})
-      out = StringIO.new
-      run(command, options.merge({out: out}))
+      options = {out: StringIO.new}.merge(options)
+      out = options[:out]
+      run(command, options)
       out.rewind
       out.read
     end

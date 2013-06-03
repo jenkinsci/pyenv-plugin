@@ -1,6 +1,8 @@
 # Jenkins pyenv plugin
 
- pyenv build wrapper for Jenkins
+[![Build Status](https://travis-ci.org/jenkinsci/pyenv-plugin.png?branch=develop)](https://travis-ci.org/jenkinsci/pyenv-plugin)
+
+pyenv build wrapper for Jenkins
 
 ## Contributing
 

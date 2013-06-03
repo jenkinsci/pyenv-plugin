@@ -77,7 +77,7 @@ module Pyenv
 
     def pip_install!
       # Run rehash everytime before invoking pip
-      run(pyenv("rehash", {out: listener}))
+      run(pyenv("rehash"), {out: listener})
 
       list = capture(pyenv("exec", "pip", "list")).strip.split
       pip_list.split(",").each do |pip|
@@ -89,10 +89,10 @@ module Pyenv
       end
 
       # Run rehash everytime after invoking pip
-      run(pyenv("rehash", {out: listener}))
+      run(pyenv("rehash"), {out: listener})
     end
 
-    def pyenv(args=[])
+    def pyenv(*args)
       (["env", "PYENV_ROOT=#{pyenv_root}", "PYENV_VERSION=#{version}", "#{pyenv_root}/bin/pyenv"] + args).shelljoin
     end
   end

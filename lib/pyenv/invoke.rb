@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require "pyenv/errors"
+require "stringio"
 
 module Pyenv
   module InvokeCommand

@@ -19,6 +19,10 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
   DEFAULT_PYENV_REPOSITORY = "git://github.com/yyuu/pyenv.git"
   DEFAULT_PYENV_REVISION = "master"
 
+  attr_reader :build
+  attr_reader :launcher
+  attr_reader :listener
+
   attr_accessor :version
   attr_accessor :pip_list
   attr_accessor :ignore_local_version

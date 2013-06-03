@@ -22,7 +22,7 @@ module Pyenv
 
       # To avoid starting multiple build jobs, acquire lock during installation
       synchronize("#{pyenv_root}.lock") do
-        versions = capture(pyenv("versions", "--bare"))
+        versions = capture(pyenv("versions", "--bare")).strip.split
         unless versions.include?(version)
           update!
           listener << "Installing #{version}..."

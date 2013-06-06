@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "java"
 require "sinatra"
 
 module Pyenv
@@ -11,11 +12,10 @@ module Pyenv
 
     get "/checkVersion" do
       value = params[:value]
-      # FIXME: must return hudson.util.FormValidation as response
       if value.nil? or value.to_s.strip.empty?
-        "<div class=\"error\">The version string must not be empty.</div>"
+        response.body = Java.hudson.util.FormValidation.error("The version string must not be empty.").renderHtml
       else
-        "<div />"
+        response.body = Java.hudson.util.FormValidation.ok().renderHtml
       end
     end
   end

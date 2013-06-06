@@ -18,5 +18,14 @@ module Pyenv
         response.body = Java.hudson.util.FormValidation.ok().renderHtml
       end
     end
+
+    get "/checkPyenvRoot" do
+      value = params[:value]
+      if value.nil? or value.to_s.strip.empty?
+        response.body = Java.hudson.util.FormValidation.error("The PYENV_ROOT must not be empty.").renderHtml
+      else
+        response.body = Java.hudson.util.FormValidation.ok().renderHtml
+      end
+    end
   end
 end

@@ -5,26 +5,26 @@ f.entry(:title => "The Python version", :field => "version") do
   # descendant of hudson.model.Descriptor.
   # Since JRuby objects do not respond to Java refrections expectedly,
   # we must specify :checkUrl explicitly as an option of textbox.
-  f.textbox(:default => "2.7.5", :checkUrl => "'#{rootURL}/descriptorByName/pyenv-PyenvWrapper/checkVersion?value='+encodeURIComponent(this.value)")
+  f.textbox(:default => descriptor.class.const_get(:DEFAULT_VERSION), :checkUrl => "'#{rootURL}/descriptorByName/pyenv-PyenvWrapper/checkVersion?value='+encodeURIComponent(this.value)")
 end
 f.advanced do
   f.entry(:title => "Ignore local version", :field => "ignore_local_version") do
-    f.checkbox(:default => false)
+    f.checkbox(:default => descriptor.class.const_get(:DEFAULT_IGNORE_LOCAL_VERSION))
   end
 end
 f.entry(:title => "Preinstall pip list", :field => "pip_list") do
-  f.textbox(:default => "tox")
+  f.textbox(:default => descriptor.class.const_get(:DEFAULT_PIP_LIST))
 end
 f.advanced do
   f.entry(:title => "PYENV_ROOT", :field => "pyenv_root") do
-    f.textbox(:default => "$HOME/.pyenv", :checkUrl => "'#{rootURL}/descriptorByName/pyenv-PyenvWrapper/checkPyenvRoot?value='+encodeURIComponent(this.value)")
+    f.textbox(:default => descriptor.class.const_get(:DEFAULT_PYENV_ROOT), :checkUrl => "'#{rootURL}/descriptorByName/pyenv-PyenvWrapper/checkPyenvRoot?value='+encodeURIComponent(this.value)")
   end
   f.entry(:title => "pyenv.git", :field => "pyenv_repository") do
-    f.textbox(:default => "git://github.com/yyuu/pyenv.git")
+    f.textbox(:default => descriptor.class.const_get(:DEFAULT_PYENV_REPOSITORY))
   end
   f.advanced do
     f.entry(:title => "branch", :field => "pyenv_revision") do
-      f.textbox(:default => "master")
+      f.textbox(:default => descriptor.class.const_get(:DEFAULT_PYENV_REVISION))
     end
   end
 end

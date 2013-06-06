@@ -1,3 +1,4 @@
+require "java"
 require "pyenv"
 require "pyenv/rack"
 require "jenkins/rack"

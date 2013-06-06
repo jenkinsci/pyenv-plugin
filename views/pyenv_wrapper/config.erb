@@ -1,7 +1,11 @@
 <%
 f = taglib("/lib/form")
 f.entry(:title => "The Python version", :field => "version") do
-  f.textbox(:default => "2.7.5")
+  # Jenkins uses Java reflection to find "doCheck" methods implemented in the
+  # descendant of hudson.model.Descriptor.
+  # Since JRuby objects do not respond to Java refrections expectedly,
+  # we must specify :checkUrl explicitly as an option of textbox.
+  f.textbox(:default => "2.7.5", :checkUrl => "'#{rootURL}/descriptorByName/pyenv-PyenvWrapper/checkVersion?value='+encodeURIComponent(this.value)")
 end
 f.advanced do
   f.entry(:title => "Ignore local version", :field => "ignore_local_version") do
@@ -13,7 +17,7 @@ f.entry(:title => "Preinstall pip list", :field => "pip_list") do
 end
 f.advanced do
   f.entry(:title => "PYENV_ROOT", :field => "pyenv_root") do
-    f.textbox(:default => "$HOME/.pyenv")
+    f.textbox(:default => "$HOME/.pyenv", :checkUrl => "'#{rootURL}/descriptorByName/pyenv-PyenvWrapper/checkPyenvRoot?value='+encodeURIComponent(this.value)")
   end
   f.entry(:title => "pyenv.git", :field => "pyenv_repository") do
     f.textbox(:default => "git://github.com/yyuu/pyenv.git")

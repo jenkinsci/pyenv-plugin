@@ -1,4 +1,13 @@
 require "pyenv"
+require "pyenv/rack"
+require "jenkins/rack"
+
+class PyenvDescriptor < Jenkins::Model::DefaultDescriptor
+  include Jenkins::RackSupport
+  def call(env)
+    Pyenv::RackApplication.new.call(env)
+  end
+end
 
 class PyenvWrapper < Jenkins::Tasks::BuildWrapper
   TRANSIENT_INSTANCE_VARIABLES = [:build, :launcher, :listener]
@@ -9,6 +18,7 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
     end
   end
 
+  describe_as Java.hudson.tasks.BuildWrapper, :with => PyenvDescriptor
   display_name "pyenv build wrapper"
 
   # FIXME: these values should be shared between views/pyenv_wrapper/config.erb

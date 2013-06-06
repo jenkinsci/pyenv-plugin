@@ -1,7 +1,8 @@
 <%
 f = taglib("/lib/form")
 f.entry(:title => "The Python version", :field => "version") do
-  f.textbox(:default => "2.7.5")
+  # FIXME: absolute path must start from ${rootURL}
+  f.textbox(:default => "2.7.5", :checkUrl => "'/descriptorByName/pyenv-PyenvWrapper/checkVersion?value='+encodeURIComponent(this.value)")
 end
 f.advanced do
   f.entry(:title => "Ignore local version", :field => "ignore_local_version") do

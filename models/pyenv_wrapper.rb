@@ -57,19 +57,48 @@ class PyenvWrapper < Jenkins::Tasks::BuildWrapper
     Pyenv::Environment.new(self).setup!
   end
 
+  def to_hash()
+    {
+      "version" => @version,
+      "pip_list" => @pip_list,
+      "ignore_local_version" => @ignore_local_version,
+      "pyenv_root" => @pyenv_root,
+      "pyenv_repository" => @pyenv_repository,
+      "pyenv_revision" => @pyenv_revision,
+    }
+  end
+
   private
   def from_hash(hash)
-    @version = attribute(hash.fetch("version", @version), PyenvDescriptor::DEFAULT_VERSION)
-    @pip_list = attribute(hash.fetch("pip_list", @pip_list), PyenvDescriptor::DEFAULT_PIP_LIST)
-    @ignore_local_version = attribute(hash.fetch("ignore_local_version", @ignore_local_version), PyenvDescriptor::DEFAULT_IGNORE_LOCAL_VERSION)
-    @pyenv_root = attribute(hash.fetch("pyenv_root", @pyenv_root), PyenvDescriptor::DEFAULT_PYENV_ROOT)
-    @pyenv_repository = attribute(hash.fetch("pyenv_repository", @pyenv_repository), PyenvDescriptor::DEFAULT_PYENV_REPOSITORY)
-    @pyenv_revision = attribute(hash.fetch("pyenv_revision", @pyenv_revision), PyenvDescriptor::DEFAULT_PYENV_REVISION)
+    @version = string(hash.fetch("version", @version), PyenvDescriptor::DEFAULT_VERSION)
+    @pip_list = string(hash.fetch("pip_list", @pip_list), PyenvDescriptor::DEFAULT_PIP_LIST)
+    @ignore_local_version = boolean(hash.fetch("ignore_local_version", @ignore_local_version), PyenvDescriptor::DEFAULT_IGNORE_LOCAL_VERSION)
+    @pyenv_root = string(hash.fetch("pyenv_root", @pyenv_root), PyenvDescriptor::DEFAULT_PYENV_ROOT)
+    @pyenv_repository = string(hash.fetch("pyenv_repository", @pyenv_repository), PyenvDescriptor::DEFAULT_PYENV_REPOSITORY)
+    @pyenv_revision = string(hash.fetch("pyenv_revision", @pyenv_revision), PyenvDescriptor::DEFAULT_PYENV_REVISION)
   end
 
   # Jenkins may return empty string as attribute value which we must ignore
-  def attribute(value, default_value=nil)
-    str = value.to_s
-    not(str.empty?) ? str : default_value
+  def string(value, default_value=nil)
+    s = value.to_s
+    if s.empty?
+      default_value
+    else
+      s
+    end
+  end
+
+  def boolean(value, default_value=false)
+    if FalseClass === value or TrueClass === value
+      value
+    else
+      # pyenv plugin (<= 0.0.4) stores boolean values as String
+      case value.to_s
+      when /false/i then false
+      when /true/i  then true
+      else
+        default_value
+      end
+    end
   end
 end

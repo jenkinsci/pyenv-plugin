@@ -8,7 +8,7 @@ class PyenvDescriptor < Jenkins::Model::DefaultDescriptor
   DEFAULT_PIP_LIST = "tox"
   DEFAULT_IGNORE_LOCAL_VERSION = false
   DEFAULT_PYENV_ROOT = "$HOME/.pyenv"
-  DEFAULT_PYENV_REPOSITORY = "git://github.com/yyuu/pyenv.git"
+  DEFAULT_PYENV_REPOSITORY = "https://github.com/yyuu/pyenv.git"
   DEFAULT_PYENV_REVISION = "master"
 
   include Jenkins::RackSupport

@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jenkinsci.plugins</groupId>
+  <artifactId>pyenv</artifactId>
+  <version>0.0.7git</version>
+  <name>pyenv plugin</name>
+  <description>Run Jenkins builds in pyenv</description>
+  <url>https://github.com/jenkinsci/pyenv-plugin</url>
+  <packaging>pom</packaging>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/pyenv-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/pyenv-plugin.git</developerConnection>
+    <url>scm:git:git://github.com/jenkinsci/pyenv-plugin.git</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>yyuu</id>
+      <name>Yamashita, Yuu</name>
+      <email>yamashita@geishatokyo.com</email>
+    </developer>
+  </developers>
+</project>

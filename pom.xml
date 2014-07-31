@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>pyenv</artifactId>
-  <version>0.0.7git</version>
+  <version>0.0.7</version>
   <name>pyenv plugin</name>
   <description>Run Jenkins builds in pyenv</description>
   <url>https://github.com/jenkinsci/pyenv-plugin</url>

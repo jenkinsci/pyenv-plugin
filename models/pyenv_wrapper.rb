@@ -4,7 +4,7 @@ require "pyenv/rack"
 require "jenkins/rack"
 
 class PyenvDescriptor < Jenkins::Model::DefaultDescriptor
-  DEFAULT_VERSION = "3.3.4"
+  DEFAULT_VERSION = "3.4.1"
   DEFAULT_PIP_LIST = "tox"
   DEFAULT_IGNORE_LOCAL_VERSION = false
   DEFAULT_PYENV_ROOT = "$HOME/.pyenv"

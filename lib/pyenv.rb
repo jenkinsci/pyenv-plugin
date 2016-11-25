@@ -22,9 +22,12 @@ module Pyenv
 
       # To avoid starting multiple build jobs, acquire lock during installation
       synchronize("#{pyenv_root}.lock") do
-        versions = capture(pyenv("versions", "--bare")).strip.split
-        unless versions.include?(version)
+        available_versions = capture(pyenv("versions", "--bare")).strip.split
+        to_install = (version.split(":") - available_versions).uniq
+        unless to_install.empty?
           update!
+        end
+        to_install.each do |version|
           listener << "Installing #{version}..."
           run(pyenv("install", version), {out: listener})
           listener << "Installed #{version}."
@@ -65,6 +68,7 @@ module Pyenv
 
     def get_local_version(path)
       str = capture("cd #{path.shellescape} && #{pyenv("local")} 2>/dev/null || true").strip
+      str = str.split.join(":")  # to support multiple versions setting via environment variable
       not(str.empty?) ? str : nil
     end
 
